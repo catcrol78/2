@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Каталог испанских песен</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Pacifico&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body class="mobile-show-list">
+
+  <header class="main-header">
+    <div class="container header-top">
+      <div class="logo-area">
+        <img src="./img/dino.png" alt="Логотип" class="dino-logo" />
+        <h1 class="logo-text" data-i18n="siteTitle">Каталог испанских песен</h1>
+      </div>
+
+      <div class="header-right">
+        <a class="admin-button" href="./admin.html"><i class="fas fa-wrench"></i> <span data-i18n="admin">Админка</span></a>
+        <div class="language-switcher">
+          <label class="sr-only" for="language-select">Language</label>
+          <select id="language-select" aria-label="Language">
+            <option value="ru" selected>Русский</option>
+            <option value="es">Español</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="container header-filters">
+      <details class="filters-collapse" open>
+        <summary class="filters-summary">
+          <span class="filters-title"><i class="fas fa-sliders-h"></i> <span data-i18n="filtersTitle">Поиск и фильтры</span></span>
+          <span class="filters-hint" data-i18n="collapseHint">нажми, чтобы свернуть</span>
+        </summary>
+
+        <div class="filters-row">
+          <div class="filter-item search-item">
+            <label class="filter-label" for="main-search"><i class="fas fa-search"></i> <span data-i18n="search">Поиск</span></label>
+            <input type="text" id="main-search" data-i18n-placeholder="searchPlaceholder" placeholder="Название, автор, ключевое слово..." />
+          </div>
+
+          <div class="filter-item">
+            <label class="filter-label" for="level-select"><i class="fas fa-signal"></i> <span data-i18n="level">Уровень</span></label>
+            <select id="level-select"></select>
+          </div>
+
+          <div class="filter-item">
+            <label class="filter-label" for="culture-select"><i class="fas fa-landmark"></i> <span data-i18n="culture">Культура</span></label>
+            <select id="culture-select"></select>
+          </div>
+
+          <div class="filter-item checks-item">
+            <div class="checks-title" data-i18n="restrFilters">Ограничения</div>
+            <label class="check-pill">
+              <input type="checkbox" id="exclude-16plus" />
+              <span data-i18n="exclude16">Исключить 16+</span>
+            </label>
+            <label class="check-pill">
+              <input type="checkbox" id="exclude-otherlang" />
+              <span data-i18n="excludeOtherLang">Исключить другой язык</span>
+            </label>
+          </div>
+
+          <div class="filter-item actions-item">
+            <button class="apply-filters-button" id="apply-filters" type="button"><i class="fas fa-filter"></i> <span data-i18n="apply">Применить</span></button>
+            <button class="clear-filters-button" id="clear-filters" type="button"><i class="fas fa-eraser"></i> <span data-i18n="reset">Сбросить</span></button>
+            <div class="search-results-summary">
+              <p class="results-click" id="results-click"><span data-i18n="foundLabel">Найдено песен:</span> <span id="song-count">0</span></p>
+              <button class="show-results-btn" id="show-results-btn" type="button">Показать: 0</button>
+            </div>
+          </div>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <main class="main-layout container">
+    <div class="mobile-view-toggle" aria-label="Переключение вида на телефоне">
+      <button class="mobile-toggle-btn" type="button" data-view="detail"><span data-i18n="mobileDetail">Детали</span></button>
+      <button class="mobile-toggle-btn" type="button" data-view="list"><span data-i18n="mobileList">Список</span></button>
+    </div>
+
+    <!-- Детали -->
+    <section id="detail-pane" class="song-detail-area">
+      <div class="placeholder-detail-message" id="placeholder-detail">
+        <h2 data-i18n="welcome">Добро пожаловать!</h2>
+        <p data-i18n="welcomeText">Выберите песню из списка, чтобы увидеть её детали.</p>
+        <img class="waiting-cover" src="./img/ritmo-del-sol.png" alt="Ritmo del Sol" onerror="this.onerror=null;this.src='./img/dino.png';this.className='waiting-dino';" />
+      </div>
+
+      <div id="song-detail-content" style="display:none;">
+        <div class="video-player-container">
+          <iframe id="video-iframe"
+            width="100%" height="315"
+            src=""
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen></iframe>
+        </div>
+        <div class="video-fallback hidden" id="video-fallback">
+          <p data-i18n="videoFallback">Если видео не отображается, открой его по ссылке:</p>
+          <a class="open-youtube" id="youtube-link" href="#" target="_blank" rel="noopener">YouTube</a>
+        </div>
+
+        <div class="song-meta">
+          <h2 class="song-title-detail" id="detail-title"></h2>
+          <p class="song-artist-detail" id="detail-artist"></p>
+          <div class="meta-badges" id="detail-badges"></div>
+          <div class="detail-resources">
+            <a class="pdf-download hidden" id="pdf-download" href="#" target="_blank" rel="noopener" download>
+              <i class="fas fa-file-pdf"></i> <span data-i18n="downloadPdf">Скачать PDF</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="detail-tabs" role="tablist" aria-label="Разделы песни">
+          <button class="detail-tab active" type="button" data-tab="lyrics" role="tab" aria-selected="true"><span data-i18n="tabLyrics">Текст</span></button>
+          <button class="detail-tab" type="button" data-tab="grammar" role="tab" aria-selected="false"><span data-i18n="tabGrammar">Грамматика</span></button>
+          <button class="detail-tab" type="button" data-tab="tasks" role="tab" aria-selected="false"><span data-i18n="tabTasks">Задания</span> <span class="tab-badge" id="tasks-count-badge" style="display:none;"></span></button>
+          <button class="detail-tab" type="button" data-tab="vocab" role="tab" aria-selected="false"><span data-i18n="tabVocab">Лексика</span></button>
+          <button class="detail-tab" type="button" data-tab="culture" role="tab" aria-selected="false"><span data-i18n="tabCulture">Культура</span></button>
+          <button class="detail-tab" type="button" data-tab="restr" role="tab" aria-selected="false"><span data-i18n="tabRestrictions">Ограничения</span></button>
+        </div>
+
+        <div class="detail-panels">
+          <div class="detail-panel active" data-panel="lyrics">
+            <div class="panel-card">
+              <h3 data-i18n="lyricsHeader">Текст / таймкоды</h3>
+              <p class="muted" id="lyrics-note"></p>
+              <div class="lyrics-text" id="lyrics-text"></div>
+            </div>
+          </div>
+
+          <div class="detail-panel" data-panel="grammar">
+            <div class="panel-card">
+              <h3 data-i18n="grammarHeader">Грамматические заметки</h3>
+              <ul class="simple-list" id="analysis-list"></ul>
+            </div>
+          </div>
+
+          <div class="detail-panel" data-panel="tasks">
+            <div class="panel-card">
+              <h3 data-i18n="tasksHeader">Задания</h3>
+              <div class="tasks-list" id="tasks-list"></div>
+              <div class="tasks-empty" id="tasks-empty" style="display:none;" data-i18n="tasksEmpty">Для этой песни задания пока не добавлены.</div>
+            </div>
+          </div>
+
+          <div class="detail-panel" data-panel="vocab">
+            <div class="panel-card">
+              <h3 data-i18n="vocabHeader">Ключевая лексика</h3>
+              <div class="chips-wrap" id="vocab-chips"></div>
+            </div>
+          </div>
+
+          <div class="detail-panel" data-panel="culture">
+            <div class="panel-card">
+              <h3 data-i18n="cultureHeader">Культура / реалии</h3>
+              <ul class="simple-list" id="culture-list"></ul>
+            </div>
+          </div>
+
+          <div class="detail-panel" data-panel="restr">
+            <div class="panel-card">
+              <h3 data-i18n="restrHeader">Ограничения</h3>
+              <ul class="simple-list" id="restr-list"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Список -->
+    <aside id="list-pane" class="song-list-area">
+      <div class="song-list-toolbar">
+        <div class="song-list-title">
+          <h3 data-i18n="songList">Список песен</h3>
+          <div class="song-list-subtitle" id="results-subtitle"></div>
+        </div>
+
+        <div class="song-list-actions">
+          <label class="sr-only" for="sort-select">Sort</label>
+          <select id="sort-select">
+            <option value="relevance" data-i18n="sortRelevance">По релевантности</option>
+            <option value="title" data-i18n="sortTitle">По названию</option>
+            <option value="artist" data-i18n="sortArtist">По исполнителю</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="song-grid" id="song-grid" aria-label="Song list"></div>
+
+      <div class="list-pagination">
+        <button class="load-more-button" id="load-more-btn" type="button"><span data-i18n="loadMore">Показать ещё</span></button>
+        <p class="list-hint" id="list-hint"></p>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="main-footer container">
+    <small>© <span id="year"></span> • <span data-i18n="footerNote">Каталог для учителей: испанский по песням</span></small>
+  </footer>
+
+  <script src="songs-data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
